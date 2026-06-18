@@ -1,31 +1,72 @@
 @echo off
 chcp 65001 >nul
+echo.
 echo ============================================================
-echo  ReviewGuard — сборка исполняемого файла (PyInstaller)
+echo  ReviewGuard — сборка портативного EXE (PyInstaller)
+echo  Запускайте из корневой папки проекта.
 echo ============================================================
 echo.
 
-REM Проверяем, что виртуальное окружение активировано или pip доступен
+:: ── 1. Проверка Python ───────────────────────────────────────────────────────
 where python >nul 2>&1
 if errorlevel 1 (
-    echo [ОШИБКА] Python не найден. Активируйте venv или установите Python.
+    echo [ОШИБКА] Python не найден в PATH.
+    echo          Скачайте Python 3.10+ с https://www.python.org и установите,
+    echo          поставив галочку "Add Python to PATH".
     pause
     exit /b 1
 )
 
-echo [1/3] Установка PyInstaller...
-pip install pyinstaller --quiet
+:: Проверяем версию Python (нужна 3.10+)
+python -c "import sys; exit(0 if sys.version_info >= (3,10) else 1)" >nul 2>&1
+if errorlevel 1 (
+    echo [ОШИБКА] Требуется Python 3.10 или новее.
+    python --version
+    pause
+    exit /b 1
+)
+
+python --version
+
+:: ── 2. Виртуальное окружение ─────────────────────────────────────────────────
+if not exist ".venv\" (
+    echo.
+    echo [1/4] Создание виртуального окружения .venv...
+    python -m venv .venv
+    if errorlevel 1 (
+        echo [ОШИБКА] Не удалось создать venv.
+        pause
+        exit /b 1
+    )
+) else (
+    echo [1/4] Виртуальное окружение .venv уже существует, пропускаем.
+)
+
+:: ── 3. Установка зависимостей ────────────────────────────────────────────────
+echo.
+echo [2/4] Установка зависимостей из requirements.txt...
+.venv\Scripts\pip.exe install -r requirements.txt --quiet
+if errorlevel 1 (
+    echo [ОШИБКА] Не удалось установить зависимости.
+    pause
+    exit /b 1
+)
+
+echo [2/4] Установка PyInstaller...
+.venv\Scripts\pip.exe install pyinstaller --quiet
 if errorlevel 1 (
     echo [ОШИБКА] Не удалось установить PyInstaller.
     pause
     exit /b 1
 )
 
-echo [2/3] Сборка приложения...
-echo       (занимает 1–3 минуты, пожалуйста, подождите)
+:: ── 4. Сборка EXE ────────────────────────────────────────────────────────────
+echo.
+echo [3/4] Сборка приложения...
+echo       Это займёт 2–5 минут, пожалуйста, подождите.
 echo.
 
-pyinstaller ^
+.venv\Scripts\pyinstaller.exe ^
     --noconfirm ^
     --name "ReviewGuard" ^
     --onedir ^
@@ -55,28 +96,34 @@ pyinstaller ^
 
 if errorlevel 1 (
     echo.
-    echo [ОШИБКА] Сборка не удалась. Проверьте вывод PyInstaller выше.
+    echo [ОШИБКА] Сборка не удалась. Смотрите вывод PyInstaller выше.
     pause
     exit /b 1
 )
 
+:: ── 5. Финальные шаги ────────────────────────────────────────────────────────
 echo.
-echo [3/3] Копирование дополнительных файлов...
+echo [4/4] Финальная настройка...
 
-REM Копируем .streamlit в папку рядом с EXE (Streamlit ищет его там же)
-if exist "dist\ReviewGuard\_internal\.streamlit" (
-    xcopy ".streamlit" "dist\ReviewGuard\.streamlit\" /E /Y /Q
+:: Удаляем промежуточный EXE из build\ чтобы не запутаться
+if exist "build\ReviewGuard\ReviewGuard.exe" (
+    ren "build\ReviewGuard\ReviewGuard.exe" "ReviewGuard_BUILD_NOT_RUN.exe" >nul 2>&1
 )
 
 echo.
 echo ============================================================
 echo  ГОТОВО!
 echo ============================================================
-echo  Папка: dist\ReviewGuard\
-echo  Запуск: dist\ReviewGuard\ReviewGuard.exe
 echo.
-echo  Для переноса на флешку скопируйте папку dist\ReviewGuard\
-echo  целиком — запускайте ReviewGuard.exe с любого компьютера.
+echo  Запуск:   dist\ReviewGuard\ReviewGuard.exe
+echo  Размер:   ~350-400 МБ (папка dist\ReviewGuard\ целиком)
+echo.
+echo  Для переноса на другой компьютер или флеш-накопитель:
+echo  скопируйте папку dist\ReviewGuard\ ЦЕЛИКОМ.
+echo  Python на целевом ПК не требуется.
+echo.
+echo  ВАЖНО: не запускайте EXE из папки build\ —
+echo  это промежуточный артефакт без библиотек.
 echo ============================================================
 echo.
 pause
