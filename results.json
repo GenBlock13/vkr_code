@@ -1,0 +1,123 @@
+{
+  "dataset": {
+    "total": 800,
+    "real": 400,
+    "bot": 400,
+    "train_size": 640,
+    "test_size": 160
+  },
+  "hyperparameters": {
+    "tfidf": {
+      "analyzer": "char_wb",
+      "ngram_range": [
+        2,
+        4
+      ],
+      "max_features": 5000,
+      "sublinear_tf": true
+    },
+    "random_forest": {
+      "n_estimators": 200,
+      "max_depth": null,
+      "max_features": "sqrt",
+      "class_weight": "balanced",
+      "oob_score": true
+    },
+    "split": {
+      "test_size": 0.2,
+      "random_state": 42
+    }
+  },
+  "metrics": {
+    "accuracy": 0.9875,
+    "roc_auc": 1.0,
+    "oob_score": 0.9953,
+    "macro_f1": 0.9875,
+    "precision_real": 0.9756,
+    "recall_real": 1.0,
+    "f1_real": 0.9877,
+    "precision_bot": 1.0,
+    "recall_bot": 0.975,
+    "f1_bot": 0.9873
+  },
+  "confusion_matrix": {
+    "TN": 80,
+    "FP": 0,
+    "FN": 2,
+    "TP": 78
+  },
+  "cross_validation": {
+    "scoring": "f1_macro",
+    "scores": [
+      0.9937,
+      0.9937,
+      1.0,
+      0.9875,
+      1.0
+    ],
+    "mean": 0.995,
+    "std": 0.0047
+  },
+  "top_features": [
+    {
+      "feature": ", ",
+      "importance": 0.0384
+    },
+    {
+      "feature": "!!",
+      "importance": 0.0373
+    },
+    {
+      "feature": ". ",
+      "importance": 0.0351
+    },
+    {
+      "feature": "!!!",
+      "importance": 0.0326
+    },
+    {
+      "feature": "!!! ",
+      "importance": 0.0299
+    },
+    {
+      "feature": "а ",
+      "importance": 0.0225
+    },
+    {
+      "feature": "ла ",
+      "importance": 0.0223
+    },
+    {
+      "feature": "! ",
+      "importance": 0.022
+    },
+    {
+      "feature": " н",
+      "importance": 0.0191
+    },
+    {
+      "feature": "!! ",
+      "importance": 0.0173
+    },
+    {
+      "feature": "тов",
+      "importance": 0.0123
+    },
+    {
+      "feature": "ар",
+      "importance": 0.0114
+    },
+    {
+      "feature": " то",
+      "importance": 0.0112
+    },
+    {
+      "feature": "вар",
+      "importance": 0.0108
+    },
+    {
+      "feature": "овар",
+      "importance": 0.0087
+    }
+  ]
+}

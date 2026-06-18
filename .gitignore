@@ -1,0 +1,27 @@
+# Виртуальное окружение
+.venv/
+
+# Артефакты сборки PyInstaller
+build/
+dist/
+*.spec
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Генерируемые файлы модели (воссоздаются через bot_detector.py)
+model_pipeline.pkl
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Claude Code
+.claude/
+
+# OS
+Thumbs.db
+.DS_Store
